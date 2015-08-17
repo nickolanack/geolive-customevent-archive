@@ -24,12 +24,28 @@ function unarchive_map_feature($id) {
     
     $prefix = 'components/com_geolive/users_files/user_files_983/Uploads/'; // not used
     
-    $iconMap = array(
-        '[ImAgE]_JYp_[G]_rP7_SHq.png' => 1,
-        'tEk_[G]_[ImAgE]_L7_xIy.png' => 3,
-        '[G]_aAJ_hLP_RDn_[ImAgE].png' => 4,
-        'ivy_[ImAgE]_lwU_[G]_VVF.png' => 2
+    $icons = array(
+        '[ImAgE]_JYp_[G]_rP7_SHq.png',
+        'ivy_[ImAgE]_lwU_[G]_VVF.png',
+        'tEk_[G]_[ImAgE]_L7_xIy.png',
+        '[G]_aAJ_hLP_RDn_[ImAgE].png'
     );
+    $layers = array(
+        1,
+        2,
+        3,
+        4
+    );
+    $archive = array(
+        '[G]_[ImAgE]_gZf_JiS_E65.png',
+        '[G]_LGt_eGZ_kDt_[ImAgE].png',
+        'AQc_zn7_[G]_[ImAgE]_sTC.png',
+        '0o6_Je3_[ImAgE]_[G]_PMR.png'
+    );
+    
+    $iconMap = array_combine($icons, $layers);
+    $archiveMap = array_combine($archive, $layers);
+    $archiveIconMap = array_combine($archive, $icons);
     
     Core::Get('Maps');
     $marker = MapController::LoadMapItem($id);
@@ -38,6 +54,13 @@ function unarchive_map_feature($id) {
     $icon = substr($iconUrl, strrpos($iconUrl, '/') + 1);
     if (key_exists($icon, $iconMap)) {
         $marker->setLayerId($iconMap[$icon]);
+        MapController::StoreMapFeature($marker);
+    }
+    
+    if (key_exists($icon, $archiveMap)) {
+        
+        $marker->setLayerId($iconMap[$icon]);
+        $marker->setIcon($prefix . $archiveIconMap[$icon]);
         MapController::StoreMapFeature($marker);
     }
     

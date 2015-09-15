@@ -7,9 +7,7 @@
  * @param int $id unique id for a map feature
  */
 function unarchive_map_feature($id) {
-    file_put_contents(__DIR__ . DS . '.custom.log', 'unarchive' . "\n\n", FILE_APPEND);
-    
-    $prefix = 'components/com_geolive/users_files/user_files_983/Uploads/'; // not used
+    $prefix = 'components/com_geolive/users_files/user_files_983/Uploads/'; //
     
     $icons = array(
         '[ImAgE]_JYp_[G]_rP7_SHq.png',
@@ -30,28 +28,33 @@ function unarchive_map_feature($id) {
         '0o6_Je3_[ImAgE]_[G]_PMR.png'
     );
     
-    $iconMap = array_combine($icons, $layers);
-    $archiveMap = array_combine($archive, $layers);
-    $archiveIconMap = array_combine($archive, $icons);
+    $iconToLayerMap = array_combine($icons, $layers);
+    $archiveToLayerMap = array_combine($archive, $layers);
+    $archiveToIconMap = array_combine($archive, $icons);
     
     Core::Get('Maps');
     $marker = MapController::LoadMapItem($id);
     $iconUrl = $marker->getIcon();
     
     $icon = substr($iconUrl, strrpos($iconUrl, '/') + 1);
-    if (key_exists($icon, $iconMap)) {
-        $marker->setLayerId($iconMap[$icon]);
-        MapController::StoreMapFeature($marker);
+    $layer = 6;
+    $newIcon = $icon;
+    if (key_exists($icon, $iconToLayerMap)) {
+        $layer = $iconToLayerMap[$icon];
     }
     
-    if (key_exists($icon, $archiveMap)) {
+    if (key_exists($icon, $archiveToLayerMap)) {
         
-        $marker->setLayerId($iconMap[$icon]);
-        $marker->setIcon($prefix . $archiveIconMap[$icon]);
-        MapController::StoreMapFeature($marker);
+        $layer = $archiveToLayerMap[$icon];
+        $newIcon = $archiveToIconMap[$icon];
     }
     
-    file_put_contents(__DIR__ . DS . '.custom.log', $icon . "\n\n", FILE_APPEND);
+    $marker->setLayerId($layer);
+    $marker->setIcon($prefix . $newIcon);
+    MapController::StoreMapFeature($marker);
+    
+    file_put_contents(__DIR__ . DS . '.custom.log', 
+        'unarchive (' . $id . ')' . $icon . " -> " . $newIcon . ', layer -> ' . $layer . "\n\n", FILE_APPEND);
 }
 
 unarchive_map_feature($eventArgs->mapitem);

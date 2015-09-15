@@ -13,15 +13,14 @@ $expiredEvents = json_decode(
     '{
                 "join":"join","table":"' . $table . '","set":"*","filters":[
                     {"join":"intersect","table":"' . $table . '","set":"*","filters":[
-                        {"field":"' . $field . '","comparator":"lessThan","value":"' . $end . '","format":"date"}
+                        {"field":"' .
+         $field . '","comparator":"lessThan","value":"' . $end . '","format":"date"}
                     ]}
                 ]
             }');
 
 $queryExpired = 'Select m.id as id, m.lid as lid FROM ' . $markers . '  as m, ' .
      AttributesFilter::JoinAttributeFilterObject($expiredEvents, 'm.id', 'm.type') . ' AND m.lid!=6';
-
-file_put_contents(__DIR__ . DS . '.custom.log', $queryExpired . "\n", FILE_APPEND);
 
 $db->iterate($queryExpired, 
     function ($row) use($field, $tableMetadata) {
@@ -33,16 +32,16 @@ $db->iterate($queryExpired,
 $revivedEvents = json_decode(
     '{
                 "join":"join","table":"' . $table . '","set":"*","filters":[
-                    {"join":"intersect","table":"' . $table . '","set":"*","filters":[
-                        {"field":"' . $field . '","comparator":"greatorThanOrEqualTo","value":"' . $end . '","format":"date"}
+                    {"join":"intersect","table":"' . $table .
+         '","set":"*","filters":[
+                        {"field":"' .
+         $field . '","comparator":"greatorThanOrEqualTo","value":"' . $end . '","format":"date"}
                     ]}
                 ]
             }');
 
 $queryRevived = 'Select m.id as id, m.lid as lid FROM ' . $markers . '  as m, ' .
      AttributesFilter::JoinAttributeFilterObject($revivedEvents, 'm.id', 'm.type') . ' AND m.lid=6';
-
-file_put_contents(__DIR__ . DS . '.custom.log', $queryRevived . "\n", FILE_APPEND);
 
 $db->iterate($queryRevived, 
     function ($row) use($field, $tableMetadata) {
@@ -51,4 +50,3 @@ $db->iterate($queryRevived,
         ));
     });
 
-file_put_contents(__DIR__ . DS . '.custom.log', "\n", FILE_APPEND);
